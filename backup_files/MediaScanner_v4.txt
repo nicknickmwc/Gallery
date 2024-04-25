@@ -1,0 +1,68 @@
+import android.content.ContentResolver
+import android.content.Context
+import android.database.Cursor
+import android.graphics.Bitmap
+import android.media.MediaMetadataRetriever
+import android.net.Uri
+import android.provider.MediaStore
+import android.util.Log
+import java.io.File
+import java.lang.Exception
+
+class MediaScanner(context: Context) {
+
+    private val contentResolver: ContentResolver = context.contentResolver
+    private val albums = HashMap<String, Bitmap?>()
+    val context1 = context
+
+    fun getAlbums(): HashMap<String, Bitmap?> {
+
+        //val foldersAndFiles = mutableListOf<String>()
+        // Получаем все папки с медиафайлами, кроме аудио
+        val cursor = contentResolver.query(
+            MediaStore.Files.getContentUri("external"),
+            arrayOf(
+                MediaStore.Files.FileColumns.PARENT,
+                MediaStore.Files.FileColumns.BUCKET_DISPLAY_NAME,
+                MediaStore.Files.FileColumns._ID,
+                MediaStore.Files.FileColumns.DATA
+            ),
+            "(${MediaStore.Files.FileColumns.MEDIA_TYPE}=? OR ${MediaStore.Files.FileColumns.MEDIA_TYPE}=?)",
+            arrayOf("2", "3"),
+            null
+        )
+
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                val displayName = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.BUCKET_DISPLAY_NAME))
+                //Log.d("Thumnail", cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID)))
+                try {
+                    val filePath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATA))
+                    Log.d("Thumbnail", filePath)
+                    val bitmap = createThumbnailFromFileId(filePath)
+                    albums[displayName] = bitmap
+                }
+                catch (e: Exception) {
+                    Log.d("Thumbnail", e.message.toString())
+                }
+
+
+            }
+        }
+        return albums
+    }
+    fun createThumbnailFromFileId(path: String): Bitmap? {
+        val mediaMetadataRetriever = MediaMetadataRetriever()
+        Log.d("Метод createThumbnailFromFileId", "Запущен")
+        try {
+            mediaMetadataRetriever.setDataSource(path)
+            return mediaMetadataRetriever.frameAtTime
+            Log.d("Получение mediaMetadataRetriever", mediaMetadataRetriever.frameAtTime.toString())
+        } catch (e: Exception) {
+            Log.d("Попытка Получение mediaMetadataRetriever", "Error creating thumbnail for file ${e.message}")
+        } finally {
+            mediaMetadataRetriever.release()
+        }
+        return null
+    }
+}

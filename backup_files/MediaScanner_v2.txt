@@ -1,0 +1,56 @@
+import android.content.ContentResolver
+import android.content.Context
+import android.database.Cursor
+import android.graphics.Bitmap
+import android.net.Uri
+import android.provider.MediaStore
+import android.util.Log
+import java.lang.Exception
+
+class MediaScanner(context: Context) {
+
+    private val contentResolver: ContentResolver = context.contentResolver
+    private val albums = HashMap<String, Bitmap?>()
+
+    fun getAlbums(): HashMap<String, Bitmap?> {
+
+        //val foldersAndFiles = mutableListOf<String>()
+        // Получаем все папки с медиафайлами, кроме аудио
+        val cursor = contentResolver.query(
+            MediaStore.Files.getContentUri("external"),
+            arrayOf(
+                MediaStore.Files.FileColumns.PARENT,
+                MediaStore.Files.FileColumns.BUCKET_DISPLAY_NAME,
+                MediaStore.Files.FileColumns._ID
+            ),
+            "(${MediaStore.Files.FileColumns.MEDIA_TYPE}=? OR ${MediaStore.Files.FileColumns.MEDIA_TYPE}=?)",
+            arrayOf("2", "3"),
+            null
+        )
+
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                val displayName = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.BUCKET_DISPLAY_NAME))
+                Log.d("Thumnail", "Here")
+                try {
+                    val thumbnail = MediaStore.Images.Thumbnails.getThumbnail(
+                        contentResolver,
+                        cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID)),
+                        MediaStore.Images.Thumbnails.MINI_KIND,
+                        null
+                    )
+                    if (thumbnail!=null)  {
+                        albums[displayName] = thumbnail
+                    }
+                    else {
+                        albums[displayName] = null
+                    }
+                }
+                catch (e: Exception) {
+                    Log.d("Попытка установить thumnail", e.message.toString())
+                }
+            }
+        }
+        return albums
+    }
+}

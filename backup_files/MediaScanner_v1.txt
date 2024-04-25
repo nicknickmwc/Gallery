@@ -1,0 +1,52 @@
+package ru.own.gallery
+
+import android.content.ContentResolver
+import android.content.Context
+import android.provider.MediaStore
+
+class MediaScanner(context: Context) {
+
+    private val contentResolver: ContentResolver = context.contentResolver
+
+    fun getMediaFoldersAndFiles(): List<Pair<String, List<String>>> {
+
+        val foldersAndFiles = mutableListOf<Pair<String, List<String>>>()
+        // Получаем все папки с медиафайлами
+        val cursor = contentResolver.query(
+            MediaStore.Files.getContentUri("external"),
+            arrayOf(MediaStore.Files.FileColumns.PARENT, MediaStore.Files.FileColumns.BUCKET_DISPLAY_NAME),
+            null,
+            null,
+            null
+        )
+
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+
+                val parentId = cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.PARENT).toLong()
+                val displayName = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.BUCKET_DISPLAY_NAME))
+
+                // Получаем список медиафайлов в папке
+                val mediaFilesCursor = contentResolver.query(
+                    MediaStore.Files.getContentUri("external", parentId),
+                    arrayOf(MediaStore.Files.FileColumns.DISPLAY_NAME),
+                    null,
+                    null,
+                    null
+                )
+
+                if (mediaFilesCursor != null) {
+                    val files = mutableListOf<String>()
+                    while (mediaFilesCursor.moveToNext()) {
+                        files.add(mediaFilesCursor.getString(0))
+                    }
+                    mediaFilesCursor.close()
+
+                    foldersAndFiles.add(Pair(displayName, files))
+                }
+            }
+            cursor.close()
+        }
+        return foldersAndFiles
+    }
+}
