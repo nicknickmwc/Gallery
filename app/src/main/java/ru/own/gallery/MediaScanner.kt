@@ -17,6 +17,7 @@ class MediaScanner(context: Context) {
             MediaStore.Files.getContentUri("external"),
             arrayOf(
                 MediaStore.Files.FileColumns.PARENT,
+                MediaStore.Files.FileColumns.DATA,
                 MediaStore.Files.FileColumns.BUCKET_DISPLAY_NAME
                 ),
             "(${MediaStore.Files.FileColumns.MEDIA_TYPE} =? OR ${MediaStore.Files.FileColumns.MEDIA_TYPE}=?)",
@@ -28,7 +29,11 @@ class MediaScanner(context: Context) {
             while (cursor.moveToNext()) {
 
                 val displayName = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.BUCKET_DISPLAY_NAME))
+                val parent = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.PARENT))
+                val data = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATA))
                 Log.d("Курсор", displayName)
+                Log.d("Курсор", parent)
+                Log.d("Курсор", data)
                 albums.add(displayName)
 
             }

@@ -1,18 +1,17 @@
 package ru.own.gallery
 
 import android.content.Context
-import android.graphics.Bitmap
+import android.media.ThumbnailUtils
 import android.net.Uri
+import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
-import java.util.ArrayList
-import kotlin.collections.HashSet
+
 
 class AlbumsAdapter(val context: Context, private val images: List<Uri>, private val albums: HashSet<String>):
     RecyclerView.Adapter<AlbumsAdapter.MyViewHolder>() {
@@ -49,7 +48,12 @@ class AlbumsAdapter(val context: Context, private val images: List<Uri>, private
         val s = albums.toList()
         val sString = s.joinToString(separator = ",")
         //val s = albums.size
-        holder.imageView.setImageURI(images[position])
+
+        val bitmapThumbnail = ThumbnailUtils.createVideoThumbnail("/storage/emulated/0/Movies/VID_20230609_191332.mp4",
+            MediaStore.Images.Thumbnails.MINI_KIND
+        )
+        holder.imageView.setImageBitmap(bitmapThumbnail)
+        //holder.imageView.setImageURI(images[position])
         holder.textView.text = s[position]
         Log.d("ResultOn", sString)
         //Toast.makeText(context, albums[0].first, Toast.LENGTH_SHORT).show()

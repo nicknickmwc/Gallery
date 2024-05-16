@@ -2,20 +2,19 @@ package ru.own.gallery
 
 
 import android.Manifest
-import android.content.ContentValues.TAG
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
+import android.media.ThumbnailUtils
 import android.net.Uri
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import java.security.Permission
-import kotlin.collections.HashSet
+
 
 class HomeActivity : AppCompatActivity() {
 
@@ -33,14 +32,9 @@ class HomeActivity : AppCompatActivity() {
 
         //Запрашиваем разрешение на чтение хранилища
         if (checkPermissionOfExternalStorageRead()) {
-            //Создание экземляра MediaScanner для получения медиафайлов
-            val scanner = MediaScanner(applicationContext)
-            albums = scanner.getAlbums()
+            getAlbums()
         }
 
-        //Создание экземляра MediaScanner для получения медиафайлов
-        //val scanner = MediaScanner(applicationContext)
-        //foldersAndFiles = scanner.getMediaFoldersAndFiles()
 
         //Создаем лист с ссылками на изображения
         val imagesUri = mutableListOf<Uri>()
@@ -59,23 +53,29 @@ class HomeActivity : AppCompatActivity() {
 
     }
 
+    fun getAlbums(): Unit {
+        val scanner = MediaScanner(this)
+        albums = scanner.getAlbums()
+    }
+
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        Log.d("OnRequest", "Функция запущена")
         when (requestCode) {
-            REQUEST_EXTERNAL_STORAGE_CODE -> {
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // Разрешение предоставлено, можно продолжать
-                    // Здесь вы можете выполнить действия, которые требуют доступа к внешнему хранилищу
-                    //Создание экземляра MediaScanner для получения медиафайлов
-                    //val scanner = MediaScanner(applicationContext)
-                    //foldersAndFiles = scanner.getMediaFoldersAndFiles()
+            EXTERNAL_STORAGE_R_CODE -> {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    getAlbums()
                     Log.d(PermissionTag, "Разрешение было предоставлено")
+
                 } else {
+
                     // Разрешение не предоставлено
-                    // Здесь вы можете уведомить пользователя о том, что некоторые функции недоступны без доступа к внешнему хранилищу
+                    Log.d(PermissionTag, "Разрешение не было предоставлено")
 
                 }
             }
+            //else -> Log.d("Неправильный код", requestCode.toString())
         }
     }
 
