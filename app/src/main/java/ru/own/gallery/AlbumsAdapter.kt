@@ -1,6 +1,7 @@
 package ru.own.gallery
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.media.ThumbnailUtils
 import android.net.Uri
 import android.provider.MediaStore
@@ -13,7 +14,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 
-class AlbumsAdapter(val context: Context, private val images: List<Uri>, private val albums: HashSet<String>):
+class AlbumsAdapter(val context: Context, private val albums: HashMap<String, Bitmap?>):
     RecyclerView.Adapter<AlbumsAdapter.MyViewHolder>() {
 
 
@@ -32,7 +33,7 @@ class AlbumsAdapter(val context: Context, private val images: List<Uri>, private
     }
 
 
-    override fun getItemCount(): Int = images.size
+    override fun getItemCount(): Int = albums.size
 
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
@@ -45,17 +46,16 @@ class AlbumsAdapter(val context: Context, private val images: List<Uri>, private
         }*/
 
         //val s: List<String> = albums.take(3)
-        val s = albums.toList()
-        val sString = s.joinToString(separator = ",")
+        //val s = albums.toList()
+        //val sString = s.joinToString(separator = ",")
         //val s = albums.size
 
-        val bitmapThumbnail = ThumbnailUtils.createVideoThumbnail("/storage/emulated/0/Movies/VID_20230609_191332.mp4",
-            MediaStore.Images.Thumbnails.MINI_KIND
-        )
-        holder.imageView.setImageBitmap(bitmapThumbnail)
+        val key = albums.keys.toList()[position]
+
         //holder.imageView.setImageURI(images[position])
-        holder.textView.text = s[position]
-        Log.d("ResultOn", sString)
+        holder.textView.text = key
+        holder.imageView.setImageBitmap(albums[key])
+        Log.d("ResultOn", "sString")
         //Toast.makeText(context, albums[0].first, Toast.LENGTH_SHORT).show()
     }
 
