@@ -1,6 +1,7 @@
 package ru.own.gallery
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.media.ThumbnailUtils
 import android.net.Uri
@@ -11,7 +12,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.app.Activity
 import androidx.recyclerview.widget.RecyclerView
+
 
 
 class AlbumsAdapter(val context: Context, private val albums: HashMap<String, Bitmap?>):
@@ -56,6 +59,11 @@ class AlbumsAdapter(val context: Context, private val albums: HashMap<String, Bi
         holder.textView.text = key
         holder.imageView.setImageBitmap(albums[key])
         Log.d("ResultOn", "sString")
+
+        /*val intent = Intent(context, AlbumActivity::class.java)
+        context.startActivity(intent)*/
+
+
         //Toast.makeText(context, albums[0].first, Toast.LENGTH_SHORT).show()
     }
 
