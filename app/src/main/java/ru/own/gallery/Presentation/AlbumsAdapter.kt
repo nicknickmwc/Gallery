@@ -1,20 +1,15 @@
-package ru.own.gallery
+package ru.own.gallery.Presentation
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
-import android.media.ThumbnailUtils
-import android.net.Uri
-import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.app.Activity
 import androidx.recyclerview.widget.RecyclerView
-
+import ru.own.gallery.R
 
 
 class AlbumsAdapter(val context: Context, private val albums: HashMap<String, Bitmap?>):

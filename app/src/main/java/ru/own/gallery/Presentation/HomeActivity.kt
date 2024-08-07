@@ -1,11 +1,10 @@
-package ru.own.gallery
+package ru.own.gallery.Presentation
 
 
 import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.media.ThumbnailUtils
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.CancellationSignal
@@ -17,16 +16,34 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import ru.own.gallery.DataRepository.AlbumRepositoryImpl
+import ru.own.gallery.DataRepository.MediaScanner
+import ru.own.gallery.Domain.AlbumModel
+import ru.own.gallery.Domain.GetAlbumUseCase
+import ru.own.gallery.R
 import java.io.File
 
 
 class HomeActivity : AppCompatActivity() {
 
+    //Имплементация репозитория из домена
+    private val albumRepositoryImpl by lazy {
+        AlbumRepositoryImpl(this)
+    }
+
+    //UseCase, выполняющий execute
+    private val getAlbumUseCase by lazy {
+        GetAlbumUseCase(albumRepositoryImpl)
+    }
+
+    //Список альбомов, конвертированный в вид HashMap<String, Bitmap?>
+    lateinit var albums: HashMap<String, Bitmap?>
+
+    //Коды разрешений
     private val EXTERNAL_STORAGE_R_CODE: Int = 44
     private val REQUEST_EXTERNAL_STORAGE_CODE = 100
-    //private lateinit var foldersAndFiles:List<Pair<String, List<String>>>
-    //private lateinit var albums: HashMap<String, Bitmap?>
-    private lateinit var albums: HashMap<String, Pair<String, String>>
+
+
     private val PermissionTag = "onRequestPermissionsResult"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,35 +53,30 @@ class HomeActivity : AppCompatActivity() {
 
         //Запрашиваем разрешение на чтение хранилища
         if (checkPermissionOfExternalStorageRead()) {
-            getAlbums()
+            //Разрешаем получить данные из внешнего хранилища
+            getForThisFragment()
         }
-
-
-        //Создаем лист с ссылками на изображения
-        /*val imagesUri = mutableListOf<Uri>()
-        for (i in 1..albums.size) {
-            (imagesUri.add(Uri.parse("android.resource://" + getPackageName() + "/" + R.drawable.example_image1)))
-        }
-        val imagesUriList = imagesUri.toList()*/
-
 
         //RecyclerView start
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
         recyclerView.layoutManager = GridLayoutManager(this, 3)
-        recyclerView.adapter = AlbumsAdapter(this, albumsConverter())
+        recyclerView.adapter = AlbumsAdapter(this, albums)
         //RecyclerView end
 
 
+
+
+
     }
 
-    //Создание map с содержимым навзаний альбомов, пути к визитному медиафайлу и его форматом
-    fun getAlbums(): Unit {
-        val scanner = MediaScanner(this)
-        albums = scanner.getAlbums()
+    //Right root to using external storage
+    fun getForThisFragment() {
+        albums = albumsConverter(getAlbumUseCase.execute())
     }
+
 
     //Создание нового map с названием альбома в качестве ключа и его миниатюрой
-    fun albumsConverter(): HashMap<String, Bitmap?> {
+    fun albumsConverter(albums: HashMap<String, Pair<String, String>>): HashMap<String, Bitmap?> {
 
         var newAlbums = HashMap<String, Bitmap?>()
         var thumbnail: Bitmap? = null
@@ -107,7 +119,8 @@ class HomeActivity : AppCompatActivity() {
             EXTERNAL_STORAGE_R_CODE -> {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
-                    getAlbums()
+                    getForThisFragment()
+
                     Log.d(PermissionTag, "Разрешение было предоставлено")
 
                 } else {

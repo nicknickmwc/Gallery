@@ -1,24 +1,19 @@
-package ru.own.gallery
+package ru.own.gallery.DataRepository
 
 import android.content.ContentResolver
 import android.content.Context
-import android.graphics.Bitmap
-import android.media.ThumbnailUtils
+import android.database.Cursor
 import android.provider.MediaStore
-import android.provider.MediaStore.Images.Thumbnails
 import android.util.Log
-import android.util.Size
-import androidx.core.os.CancellationSignal
-import java.io.File
+import ru.own.gallery.Domain.AlbumModel
+import ru.own.gallery.Domain.AlbumRepository
 
-class MediaScanner(context: Context) {
+class AlbumRepositoryImpl(private val context: Context): AlbumRepository {
 
-    private val contentResolver: ContentResolver = context.contentResolver
+    private val contentResolver:ContentResolver = context.contentResolver
 
-
-    fun getAlbums(): HashMap<String, Pair<String, String>> {
-
-        val albums = HashMap<String, Pair<String, String>>()
+    override fun getAlbum(): AlbumModel {
+        val albums = AlbumModel()
         // Получаем все папки с медиафайлами
         val cursor = contentResolver.query(
             MediaStore.Files.getContentUri("external"),
@@ -27,7 +22,7 @@ class MediaScanner(context: Context) {
                 MediaStore.Files.FileColumns.DATA,
                 MediaStore.Files.FileColumns.BUCKET_DISPLAY_NAME,
                 MediaStore.Files.FileColumns.MEDIA_TYPE
-                ),
+            ),
             "(${MediaStore.Files.FileColumns.MEDIA_TYPE} =? OR ${MediaStore.Files.FileColumns.MEDIA_TYPE}=?)",
             arrayOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE.toString(), MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO.toString()),
             null
@@ -36,9 +31,9 @@ class MediaScanner(context: Context) {
         if (cursor != null) {
             while (cursor.moveToNext()) {
 
-                val data = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATA))
-                val displayName = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.BUCKET_DISPLAY_NAME))
-                val mediaType = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.MEDIA_TYPE))
+                val data = cursorGetString(MediaStore.Files.FileColumns.DATA, cursor)
+                val displayName = cursorGetString(MediaStore.Files.FileColumns.BUCKET_DISPLAY_NAME, cursor)
+                val mediaType = cursorGetString(MediaStore.Files.FileColumns.MEDIA_TYPE, cursor)
 
 
                 albums.put(displayName, Pair<String, String>(data, mediaType))
@@ -50,5 +45,8 @@ class MediaScanner(context: Context) {
             cursor.close()
         }
         return albums
+    }
+    private fun cursorGetString(fileColumn: String, cursor: Cursor): String {
+        return cursor.getString(cursor.getColumnIndexOrThrow(fileColumn))
     }
 }
