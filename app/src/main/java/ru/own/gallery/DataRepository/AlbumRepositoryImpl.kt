@@ -1,5 +1,6 @@
 package ru.own.gallery.DataRepository
 
+import android.app.Application
 import android.content.ContentResolver
 import android.content.Context
 import android.database.Cursor
@@ -9,6 +10,7 @@ import ru.own.gallery.Domain.AlbumModel
 import ru.own.gallery.Domain.AlbumRepository
 
 class AlbumRepositoryImpl(private val context: Context): AlbumRepository {
+
 
     private val contentResolver:ContentResolver = context.contentResolver
 

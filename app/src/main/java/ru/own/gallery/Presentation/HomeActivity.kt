@@ -51,7 +51,17 @@ class HomeActivity : AppCompatActivity() {
         setContentView(R.layout.activity_home)
 
 
-        //Запрашиваем разрешение на чтение хранилища
+        //Передаем контекст контекст-провайдеру
+        ContextProvider.provideContext(this)
+
+
+        val fragmentManager = supportFragmentManager
+        val fragmentTransaction = fragmentManager.beginTransaction()
+        val albumsFragment = AlbumsFragment()
+        fragmentTransaction.add(R.id.frag1, albumsFragment).commit()
+
+
+       /* //Запрашиваем разрешение на чтение хранилища
         if (checkPermissionOfExternalStorageRead()) {
             //Разрешаем получить данные из внешнего хранилища
             getForThisFragment()
@@ -62,7 +72,7 @@ class HomeActivity : AppCompatActivity() {
         recyclerView.layoutManager = GridLayoutManager(this, 3)
         recyclerView.adapter = AlbumsAdapter(this, albums)
         //RecyclerView end
-
+*/
 
 
 
