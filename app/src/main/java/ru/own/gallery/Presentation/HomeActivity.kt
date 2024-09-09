@@ -52,7 +52,7 @@ class HomeActivity : AppCompatActivity() {
 
 
         //Передаем контекст контекст-провайдеру
-        ContextProvider.provideContext(this)
+        ContextProvider.provideContext(this.applicationContext)
 
 
         val fragmentManager = supportFragmentManager
