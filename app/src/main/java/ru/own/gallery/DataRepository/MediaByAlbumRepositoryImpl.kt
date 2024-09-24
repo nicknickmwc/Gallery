@@ -4,40 +4,39 @@ import android.content.ContentResolver
 import android.content.Context
 import android.database.Cursor
 import android.provider.MediaStore
-import ru.own.gallery.Domain.AlbumModel
-import ru.own.gallery.Domain.AlbumRepository
+import ru.own.gallery.Domain.MediaByAlbumRepository
+import ru.own.gallery.Domain.MediaFilesModel
 
-class AlbumRepositoryAPI33(private val context: Context): AlbumRepository {
+class MediaByAlbumRepositoryImpl(context: Context): MediaByAlbumRepository {
 
     private val contentResolver: ContentResolver = context.contentResolver
-    private val images = ArrayList<String>() //mediaType is 1
-    private val videos = ArrayList<String>() //mediaType is 2
 
+    override fun getMedia(albumName: String): MediaFilesModel {
 
-    override fun getAlbum(): AlbumModel {
-
-        val albums = AlbumModel()
+        val mediaFiles = MediaFilesModel()
 
         val projectionImages = arrayOf(
 
             MediaStore.Images.Media.DATA,
-            MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
+            //MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
 
 
-        )
+            )
 
         val projectionVideos = arrayOf(
 
             MediaStore.Video.Media.DATA,
-            MediaStore.Video.Media.BUCKET_DISPLAY_NAME,
+            //MediaStore.Video.Media.BUCKET_DISPLAY_NAME,
 
 
-        )
+            )
+
+        val selection = "${MediaStore.Images.Media.BUCKET_DISPLAY_NAME} = $albumName"
 
         val imagesCursor = contentResolver.query(
             MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
             projectionImages,
-            null,
+            selection,
             null,
             null
         )
@@ -45,7 +44,7 @@ class AlbumRepositoryAPI33(private val context: Context): AlbumRepository {
         val videosCursor = contentResolver.query(
             MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
             projectionVideos,
-            null,
+            selection   ,
             null,
             null
         )
@@ -55,11 +54,12 @@ class AlbumRepositoryAPI33(private val context: Context): AlbumRepository {
             while (imagesCursor.moveToNext()) {
 
                 val data = cursorGetString(MediaStore.Images.Media.DATA, imagesCursor)
-                val displayName = cursorGetString(MediaStore.Images.Media.BUCKET_DISPLAY_NAME, imagesCursor)
+                //val displayName = cursorGetString(MediaStore.Images.Media.BUCKET_DISPLAY_NAME, imagesCursor)
                 val mediaType = "1"
 
-                albums.put(displayName, Pair<String, String>(data, mediaType))
-                images.add(data)
+                mediaFiles.add(Pair(mediaType, data))
+
+
 
             }
 
@@ -72,17 +72,17 @@ class AlbumRepositoryAPI33(private val context: Context): AlbumRepository {
             while (videosCursor.moveToNext()) {
 
                 val data = cursorGetString(MediaStore.Video.Media.DATA, videosCursor)
-                val displayName = cursorGetString(MediaStore.Video.Media.BUCKET_DISPLAY_NAME, videosCursor)
+                //val displayName = cursorGetString(MediaStore.Video.Media.BUCKET_DISPLAY_NAME, videosCursor)
                 val mediaType = "2"
 
-                albums.put(displayName, Pair<String, String>(data, mediaType))
-                videos.add(data)
+                mediaFiles.add(Pair(mediaType, data))
+
 
             }
             videosCursor.close()
         }
 
-        return albums
+        return mediaFiles
 
     }
 
