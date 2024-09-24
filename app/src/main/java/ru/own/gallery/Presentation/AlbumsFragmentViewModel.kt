@@ -8,6 +8,7 @@ import android.os.CancellationSignal
 import android.provider.MediaStore
 import android.util.Size
 import androidx.lifecycle.ViewModel
+import ru.own.gallery.DataRepository.AlbumRepositoryAPI33
 import ru.own.gallery.DataRepository.AlbumRepositoryImpl
 import ru.own.gallery.Domain.GetAlbumUseCase
 import java.io.File
@@ -17,7 +18,7 @@ class AlbumsFragmentViewModel(): ViewModel() {
     //Объект репозитория
     private val albumRepositoryImpl by lazy {
 
-        AlbumRepositoryImpl(ContextProvider.context!!)
+        AlbumRepositoryAPI33(ContextProvider.context!!)
 
     }
 
@@ -31,8 +32,39 @@ class AlbumsFragmentViewModel(): ViewModel() {
 
     //Присваиваем albums необходимое значение
     fun albumsGet(): HashMap<String, Bitmap?>  {
-        this.albums = albumsConverter(getAlbumUseCase.execute())
+        this.albums = albumsConverterAPI33(getAlbumUseCase.execute())
         return this.albums
+    }
+
+    fun albumsConverterAPI33(albums: HashMap<String, Pair<String, String>>): HashMap<String, Bitmap?> {
+        var newAlbums = HashMap<String, Bitmap?>()
+        var thumbnail: Bitmap? = null
+
+        for(item in albums) {
+
+            //Название альбома
+            val key = item.key
+            //Пара 'путь к файлу' - 'формат'
+            val pair = item.value
+
+            //'Формат' (создаем для каждого формата свою миниатюру)
+            when (pair.second) {
+
+                "1" -> {
+                    thumbnail = ThumbnailUtils.createImageThumbnail(File(pair.first), Size(512,512), CancellationSignal())
+                }
+
+                "2" -> {
+                    thumbnail = ThumbnailUtils.createVideoThumbnail(File(pair.first), Size(512,512), CancellationSignal())
+                }
+
+            }
+            newAlbums.put(key, thumbnail)
+        }
+
+        return newAlbums
+
+
     }
 
     fun albumsConverter(albums: HashMap<String, Pair<String, String>>): HashMap<String, Bitmap?> {

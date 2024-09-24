@@ -1,55 +1,71 @@
 package ru.own.gallery.Presentation
 
 
-import android.Manifest
-import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.media.ThumbnailUtils
-import android.os.Build
+import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
-import android.os.CancellationSignal
-import android.provider.MediaStore
-import android.util.Log
-import android.util.Size
+import android.text.Html
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.UnderlineSpan
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import ru.own.gallery.DataRepository.AlbumRepositoryImpl
-import ru.own.gallery.DataRepository.MediaScanner
-import ru.own.gallery.Domain.AlbumModel
-import ru.own.gallery.Domain.GetAlbumUseCase
+import com.google.android.material.resources.TextAppearance
 import ru.own.gallery.R
-import java.io.File
+import java.io.NotActiveException
 
 
 class HomeActivity : AppCompatActivity() {
 
-    //Имплементация репозитория из домена
-    private val albumRepositoryImpl by lazy {
-        AlbumRepositoryImpl(this)
-    }
+    private lateinit var albumsTextView: TextView
+    private lateinit var imagesTextView: TextView
+    private lateinit var videosTextView: TextView
 
-    //UseCase, выполняющий execute
-    private val getAlbumUseCase by lazy {
-        GetAlbumUseCase(albumRepositoryImpl)
-    }
-
-    //Список альбомов, конвертированный в вид HashMap<String, Bitmap?>
-    lateinit var albums: HashMap<String, Bitmap?>
-
-    //Коды разрешений
-    private val EXTERNAL_STORAGE_R_CODE: Int = 44
-    private val REQUEST_EXTERNAL_STORAGE_CODE = 100
-
-
-    private val PermissionTag = "onRequestPermissionsResult"
+    private var selectedBottomItem = "albums"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
 
+        init()
+
+        setActiveStatus(albumsTextView)
+
+        albumsTextView.setOnClickListener{
+
+            if(selectedBottomItem != "albums") {
+
+                deactivateStatus()
+                selectedBottomItem = "albums"
+                setActiveStatus(albumsTextView)
+
+            }
+
+        }
+
+        imagesTextView.setOnClickListener{
+
+            if(selectedBottomItem != "images") {
+
+                deactivateStatus()
+                selectedBottomItem = "images"
+                setActiveStatus(imagesTextView)
+
+            }
+
+        }
+
+        videosTextView.setOnClickListener{
+
+            if(selectedBottomItem != "videos") {
+
+                deactivateStatus()
+                selectedBottomItem = "videos"
+                setActiveStatus(videosTextView)
+
+            }
+
+        }
 
         //Передаем контекст контекст-провайдеру
         ContextProvider.provideContext(this.applicationContext)
@@ -60,111 +76,77 @@ class HomeActivity : AppCompatActivity() {
         val albumsFragment = AlbumsFragment()
         fragmentTransaction.add(R.id.frag1, albumsFragment).commit()
 
-
-       /* //Запрашиваем разрешение на чтение хранилища
-        if (checkPermissionOfExternalStorageRead()) {
-            //Разрешаем получить данные из внешнего хранилища
-            getForThisFragment()
-        }
-
-        //RecyclerView start
-        val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
-        recyclerView.layoutManager = GridLayoutManager(this, 3)
-        recyclerView.adapter = AlbumsAdapter(this, albums)
-        //RecyclerView end
-*/
-
-
-
-
     }
 
-    //Right root to using external storage
-    fun getForThisFragment() {
-        albums = albumsConverter(getAlbumUseCase.execute())
-    }
+    fun deactivateStatus() {
 
 
-    //Создание нового map с названием альбома в качестве ключа и его миниатюрой
-    fun albumsConverter(albums: HashMap<String, Pair<String, String>>): HashMap<String, Bitmap?> {
+        when (selectedBottomItem) {
 
-        var newAlbums = HashMap<String, Bitmap?>()
-        var thumbnail: Bitmap? = null
-
-
-        for(item in albums) {
-
-            //Название альбома
-            val key = item.key
-            //Пара 'путь к файлу' - 'формат'
-            val pair = item.value
-
-            //'Формат' (создаем для каждого формата свою миниатюру)
-            when (pair.second) {
-
-                MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE.toString() -> {
-
-                    thumbnail = ThumbnailUtils.createImageThumbnail(File(pair.first), Size(512,512), CancellationSignal())
-
-                }
-
-                MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO.toString() -> {
-
-                    thumbnail = ThumbnailUtils.createVideoThumbnail(File(pair.first), Size(512,512), CancellationSignal())
-
-                }
-            }
-
-            newAlbums.put(key, thumbnail)
+            "albums" -> setNoActiveStatus(albumsTextView)
+            "images" -> setNoActiveStatus(imagesTextView)
+            "videos" -> setNoActiveStatus(videosTextView)
 
         }
 
-        return newAlbums
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        Log.d("OnRequest", "Функция запущена")
-        when (requestCode) {
-            EXTERNAL_STORAGE_R_CODE -> {
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+    fun setActiveStatus(textView: TextView) {
 
-                    getForThisFragment()
+        val textViewPaint = textView.paint
+        val textAppearance = R.style.ActiveTextViewStyle
 
-                    Log.d(PermissionTag, "Разрешение было предоставлено")
+        textViewPaint.isUnderlineText = true
+        textView.paint.set(textViewPaint)
+        textView.setTextAppearance(textAppearance)
 
-                } else {
+    }
 
-                    // Разрешение не предоставлено
-                    Log.d(PermissionTag, "Разрешение не было предоставлено")
+    fun setNoActiveStatus(textView: TextView) {
 
-                }
-            }
-            //else -> Log.d("Неправильный код", requestCode.toString())
+        val textViewPaint = textView.paint
+        val textAppearance = R.style.NoActiveTextViewStyle
+
+        textViewPaint.isUnderlineText = false
+        textView.paint.set(textViewPaint)
+        textView.setTextAppearance(textAppearance)
+
+    }
+
+    fun setItemTextStatus(textViewThis: TextView, textViewAnother: TextView): Unit {
+
+        val textViewThisPaint = textViewThis.paint
+        val textViewAnotherPaint = textViewAnother.paint
+
+
+        val textAppearanceActive = R.style.ActiveTextViewStyle
+        val textAppearanceNoActive = R.style.NoActiveTextViewStyle
+
+        val typeface = textViewThis.typeface
+
+        if (!typeface.isBold) {
+
+            textViewThis.setTextAppearance(textAppearanceActive)
+            textViewThisPaint.isUnderlineText = true
+            textViewThis.paint.set(textViewThisPaint)
+
+            textViewAnother.setTextAppearance(textAppearanceNoActive)
+            textViewAnotherPaint.isUnderlineText = false
+            textViewAnother.paint.set(textViewAnotherPaint)
         }
+
     }
-
-    fun checkPermissionOfExternalStorageRead(): Boolean {
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-
-            if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) ==
-                PackageManager.PERMISSION_GRANTED) {
-                return true
-            }
-            else {
-                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), EXTERNAL_STORAGE_R_CODE)
-                return false
-            }
-
-        }
-        return TODO("Provide the return value")
-    }
-
 
 
     fun init(): Unit {
 
+        albumsTextView = findViewById(R.id.albums_text_view)
+        imagesTextView = findViewById(R.id.images_text_view)
+        videosTextView = findViewById(R.id.videos_text_view)
+
+
     }
+
+
 
 }

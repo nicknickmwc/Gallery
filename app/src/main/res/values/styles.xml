@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="NoActiveTextViewStyle" parent="TextAppearance.AppCompat.Subhead">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">10dp</item>
+        <!--<item name="android:fontFamily">sans-serif-condensed</item>-->
+    </style>
+
+    <!-- Стиль для TextView: жирный и подчеркнутый текст -->
+    <style name="ActiveTextViewStyle" parent="TextAppearance.AppCompat.Subhead">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">10dp</item>
+       <!-- <item name="android:fontFamily">sans-serif-condensed</item>-->
+    </style>
+
+</resources>
