@@ -8,19 +8,33 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.cardview.widget.CardView
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import ru.own.gallery.R
 
 
-class AlbumsAdapter(val context: Context, private val albums: HashMap<String, Bitmap?>):
+class AlbumsAdapter(val context: Context, private val albums: HashMap<String, Bitmap?>,val viewModel: AlbumsFragmentViewModel):
     RecyclerView.Adapter<AlbumsAdapter.MyViewHolder>() {
+
 
 
 
     inner class MyViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
 
+
         val imageView: ImageView = itemView.findViewById(R.id.imageView1)
         val textView: TextView = itemView.findViewById(R.id.albumName)
+        private val cardView: CardView = itemView.findViewById(R.id.cardView)
+
+        init {
+            cardView.setOnClickListener {
+                viewModel.setSelectedAlbum(albums.keys.toList()[adapterPosition])
+            }
+        }
+
+
+
 
     }
 

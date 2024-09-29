@@ -4,6 +4,7 @@ import android.content.ContentResolver
 import android.content.Context
 import android.database.Cursor
 import android.provider.MediaStore
+import android.util.Log
 import ru.own.gallery.Domain.MediaByAlbumRepository
 import ru.own.gallery.Domain.MediaFilesModel
 
@@ -12,6 +13,8 @@ class MediaByAlbumRepositoryImpl(context: Context): MediaByAlbumRepository {
     private val contentResolver: ContentResolver = context.contentResolver
 
     override fun getMedia(albumName: String): MediaFilesModel {
+
+        Log.d("MediaByAlbumRepositoryImpl", "getMediaWasCalled")
 
         val mediaFiles = MediaFilesModel()
 
@@ -31,7 +34,8 @@ class MediaByAlbumRepositoryImpl(context: Context): MediaByAlbumRepository {
 
             )
 
-        val selection = "${MediaStore.Images.Media.BUCKET_DISPLAY_NAME} = $albumName"
+        val selection = "${MediaStore.Images.Media.BUCKET_DISPLAY_NAME} = '$albumName'"
+        Log.d("MediaByAlbumRepository", "selection = $selection")
 
         val imagesCursor = contentResolver.query(
             MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
@@ -51,6 +55,9 @@ class MediaByAlbumRepositoryImpl(context: Context): MediaByAlbumRepository {
 
         if (imagesCursor != null) {
 
+            Log.d("MediaByAlbumRepositoryImpl", "imagesCursorIsNull - ${imagesCursor!=null}")
+            Log.d("MediaByAlbumRepositoryImpl", "albumName = $albumName")
+
             while (imagesCursor.moveToNext()) {
 
                 val data = cursorGetString(MediaStore.Images.Media.DATA, imagesCursor)
@@ -68,6 +75,8 @@ class MediaByAlbumRepositoryImpl(context: Context): MediaByAlbumRepository {
         }
 
         if (videosCursor != null) {
+
+            Log.d("MediaByAlbumRepositoryImpl", "videosCursorIsNull - ${videosCursor!=null}")
 
             while (videosCursor.moveToNext()) {
 

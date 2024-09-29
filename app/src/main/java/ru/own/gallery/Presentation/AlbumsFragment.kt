@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
@@ -33,7 +34,8 @@ class AlbumsFragment : Fragment() {
 
     private val REQUEST_CODE = 100
 
-    private val albumsViewModel: AlbumsFragmentViewModel by viewModels()
+    //private val albumsViewModel: AlbumsFragmentViewModel by viewModels()
+    private val albumsActivityViewModel: AlbumsFragmentViewModel by activityViewModels()
 
     //Список альбомов, конвертированный в вид HashMap<String, Bitmap?>
     lateinit var albums: HashMap<String, Bitmap?>
@@ -65,14 +67,16 @@ class AlbumsFragment : Fragment() {
         if (albums.isNotEmpty()) {
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
         recyclerView.layoutManager = GridLayoutManager(requireContext(), 3)
-        recyclerView.adapter = AlbumsAdapter(requireContext(), albums)
+        recyclerView.adapter = AlbumsAdapter(requireContext(), albums, albumsActivityViewModel)
             }
+
+        //albumsActivityViewModel.getSelectedALbum.observe(viewLifecycleOwner) {}
 
     }
 
 
     fun permissionsIsGranted() {
-        this.albums = albumsViewModel.albumsGet()
+        this.albums = albumsActivityViewModel.albumsGet()
     }
 
     override fun onRequestPermissionsResult(

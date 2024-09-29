@@ -8,8 +8,13 @@ import android.text.Html
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.UnderlineSpan
+import android.util.Log
 import android.widget.TextView
+import android.widget.Toolbar
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.resources.TextAppearance
 import ru.own.gallery.R
 import java.io.NotActiveException
@@ -21,7 +26,10 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var imagesTextView: TextView
     private lateinit var videosTextView: TextView
 
-    private var selectedBottomItem = "albums"
+    private val albumsViewModel: AlbumsFragmentViewModel by viewModels()
+    private val mediaByAlbumViewModel: MediaByAlbumViewModel by viewModels()
+
+    private var selectedBottomItem = "all"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,14 +37,37 @@ class HomeActivity : AppCompatActivity() {
 
         init()
 
+        //Передача контекста контекст-провайдеру
+        ContextProvider.provideContext(this.applicationContext)
+
+
+        //Создание фрагментов
+        val fragmentManager = supportFragmentManager
+        val fragmentTransaction = fragmentManager.beginTransaction()
+        val albumsFragment = AlbumsFragment()
+        val mediaByAlbumFragment = MediaByAlbumFragment()
+        fragmentTransaction.add(R.id.frag1, albumsFragment).commit()
+
+        //
+        albumsViewModel.selectedAlbum.observe(this) {name ->
+            Log.d("Selected album", name)
+            mediaByAlbumViewModel.albumName.value = name
+                fragmentManager.beginTransaction()
+                    .replace(R.id.frag1, mediaByAlbumFragment)
+                    .addToBackStack(null)
+                    .commit()
+        }
+
+        /////Listeners for items in bottom_nav_view
+
         setActiveStatus(albumsTextView)
 
         albumsTextView.setOnClickListener{
 
-            if(selectedBottomItem != "albums") {
+            if(selectedBottomItem != "all") {
 
                 deactivateStatus()
-                selectedBottomItem = "albums"
+                selectedBottomItem = "all"
                 setActiveStatus(albumsTextView)
 
             }
@@ -67,23 +98,18 @@ class HomeActivity : AppCompatActivity() {
 
         }
 
-        //Передаем контекст контекст-провайдеру
-        ContextProvider.provideContext(this.applicationContext)
 
-
-        val fragmentManager = supportFragmentManager
-        val fragmentTransaction = fragmentManager.beginTransaction()
-        val albumsFragment = AlbumsFragment()
-        fragmentTransaction.add(R.id.frag1, albumsFragment).commit()
 
     }
+
+
 
     fun deactivateStatus() {
 
 
         when (selectedBottomItem) {
 
-            "albums" -> setNoActiveStatus(albumsTextView)
+            "all" -> setNoActiveStatus(albumsTextView)
             "images" -> setNoActiveStatus(imagesTextView)
             "videos" -> setNoActiveStatus(videosTextView)
 

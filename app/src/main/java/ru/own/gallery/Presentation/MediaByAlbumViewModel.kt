@@ -3,17 +3,24 @@ package ru.own.gallery.Presentation
 import android.graphics.Bitmap
 import android.media.ThumbnailUtils
 import android.os.CancellationSignal
+import android.util.Log
 import android.util.Size
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import ru.own.gallery.DataRepository.AlbumRepositoryAPI33
 import ru.own.gallery.DataRepository.MediaByAlbumRepositoryImpl
-import ru.own.gallery.Domain.GetAlbumUseCase
 import ru.own.gallery.Domain.GetMediaByAlbumUseCase
-import ru.own.gallery.Domain.MediaByAlbumRepository
 import ru.own.gallery.Domain.MediaFilesModel
 import java.io.File
 
-class MediaByAlbumFragmentViewModel(): ViewModel() {
+class MediaByAlbumViewModel(): ViewModel() {
+
+    val albumName = MutableLiveData<String>()
+
+    fun setSelectedAlbum(album: String) {
+        Log.d("ViewModel", "Setting completed")
+        albumName.value = album
+    }
+
 
     //Объект репозитория
     private val mediaByAlbumRepositoryImpl by lazy {
@@ -27,10 +34,10 @@ class MediaByAlbumFragmentViewModel(): ViewModel() {
         GetMediaByAlbumUseCase(mediaByAlbumRepositoryImpl)
     }
 
-    var mediaFiles = ArrayList<Pair<String, Bitmap?>>()
+    var mediaFiles = MediaFilesModel()
 
     fun getMedia(albumName: String): Unit {
-        this.mediaFiles = mediaConverter(getMediaByAlbumUseCase.execute(albumName))
+        this.mediaFiles = getMediaByAlbumUseCase.execute(albumName)
     }
 
     private fun mediaConverter(mediaFiles: MediaFilesModel):  ArrayList<Pair<String, Bitmap?>> {

@@ -6,7 +6,10 @@ import android.graphics.Bitmap
 import android.media.ThumbnailUtils
 import android.os.CancellationSignal
 import android.provider.MediaStore
+import android.util.Log
 import android.util.Size
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import ru.own.gallery.DataRepository.AlbumRepositoryAPI33
 import ru.own.gallery.DataRepository.AlbumRepositoryImpl
@@ -14,6 +17,16 @@ import ru.own.gallery.Domain.GetAlbumUseCase
 import java.io.File
 
 class AlbumsFragmentViewModel(): ViewModel() {
+
+    val selectedAlbum = MutableLiveData<String>()
+
+    /*val getSelectedALbum: LiveData<String>
+        get() = getSelectedALbum
+*/
+    fun setSelectedAlbum(album: String) {
+        Log.d("ViewModel", "Setting completed")
+        selectedAlbum.value = album
+    }
 
     //Объект репозитория
     private val albumRepositoryImpl by lazy {
