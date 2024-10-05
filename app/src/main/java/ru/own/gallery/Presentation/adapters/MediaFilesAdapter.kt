@@ -1,27 +1,23 @@
-package ru.own.gallery.Presentation
+package ru.own.gallery.Presentation.adapters
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapRegionDecoder
 import android.media.ThumbnailUtils
 import android.os.CancellationSignal
-import android.provider.MediaStore.Images
 import android.util.Size
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.appcompat.view.menu.MenuView.ItemView
-import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import ru.own.gallery.Domain.MediaFilesModel
+import ru.own.gallery.Domain.models.MediaFilesModel
 import ru.own.gallery.R
 import java.io.File
 import com.bumptech.glide.Glide
+import ru.own.gallery.Presentation.viewmodels.MediaByAlbumViewModel
 
-class MediaFilesAdapter(private val context: Context,private val mediaFiles: MediaFilesModel,
-    private val mediaByAlbumViewModel: MediaByAlbumViewModel
+class MediaFilesAdapter(private val context: Context, private val mediaFiles: MediaFilesModel,
+                        private val mediaByAlbumViewModel: MediaByAlbumViewModel
     ): RecyclerView.Adapter<MediaFilesAdapter.MyViewHolder>() {
 
     inner class MyViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {

@@ -5,8 +5,8 @@ import android.content.Context
 import android.database.Cursor
 import android.provider.MediaStore
 import android.util.Log
-import ru.own.gallery.Domain.MediaByAlbumRepository
-import ru.own.gallery.Domain.MediaFilesModel
+import ru.own.gallery.Domain.repositories.MediaByAlbumRepository
+import ru.own.gallery.Domain.models.MediaFilesModel
 
 class MediaByAlbumRepositoryImpl(context: Context): MediaByAlbumRepository {
 

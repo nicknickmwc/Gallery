@@ -1,4 +1,4 @@
-package ru.own.gallery.Presentation
+package ru.own.gallery.Presentation.viewmodels
 
 import android.graphics.Bitmap
 import android.media.ThumbnailUtils
@@ -8,8 +8,9 @@ import android.util.Size
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import ru.own.gallery.DataRepository.MediaByAlbumRepositoryImpl
-import ru.own.gallery.Domain.GetMediaByAlbumUseCase
-import ru.own.gallery.Domain.MediaFilesModel
+import ru.own.gallery.Domain.usecases.GetMediaByAlbumUseCase
+import ru.own.gallery.Domain.models.MediaFilesModel
+import ru.own.gallery.Presentation.ContextProvider
 import java.io.File
 
 class MediaByAlbumViewModel(): ViewModel() {

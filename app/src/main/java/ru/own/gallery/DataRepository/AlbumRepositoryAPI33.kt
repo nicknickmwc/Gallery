@@ -4,8 +4,8 @@ import android.content.ContentResolver
 import android.content.Context
 import android.database.Cursor
 import android.provider.MediaStore
-import ru.own.gallery.Domain.AlbumModel
-import ru.own.gallery.Domain.AlbumRepository
+import ru.own.gallery.Domain.models.AlbumModel
+import ru.own.gallery.Domain.repositories.AlbumRepository
 
 class AlbumRepositoryAPI33(private val context: Context): AlbumRepository {
 

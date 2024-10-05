@@ -1,19 +1,17 @@
-package ru.own.gallery.Presentation
+package ru.own.gallery.Presentation.viewmodels
 
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.media.ThumbnailUtils
 import android.os.CancellationSignal
 import android.provider.MediaStore
 import android.util.Log
 import android.util.Size
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import ru.own.gallery.DataRepository.AlbumRepositoryAPI33
-import ru.own.gallery.DataRepository.AlbumRepositoryImpl
-import ru.own.gallery.Domain.GetAlbumUseCase
+import ru.own.gallery.Domain.usecases.GetAlbumUseCase
+import ru.own.gallery.Presentation.ContextProvider
 import java.io.File
 
 class AlbumsFragmentViewModel(): ViewModel() {

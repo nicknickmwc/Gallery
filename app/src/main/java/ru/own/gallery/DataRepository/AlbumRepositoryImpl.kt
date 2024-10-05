@@ -1,13 +1,12 @@
 package ru.own.gallery.DataRepository
 
-import android.app.Application
 import android.content.ContentResolver
 import android.content.Context
 import android.database.Cursor
 import android.provider.MediaStore
 import android.util.Log
-import ru.own.gallery.Domain.AlbumModel
-import ru.own.gallery.Domain.AlbumRepository
+import ru.own.gallery.Domain.models.AlbumModel
+import ru.own.gallery.Domain.repositories.AlbumRepository
 
 class AlbumRepositoryImpl(private val context: Context): AlbumRepository {
 

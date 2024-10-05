@@ -1,23 +1,16 @@
 package ru.own.gallery.Presentation
 
 
-import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Bundle
-import android.text.Html
-import android.text.SpannableString
-import android.text.Spanned
-import android.text.style.UnderlineSpan
 import android.util.Log
 import android.widget.TextView
-import android.widget.Toolbar
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
-import com.google.android.material.appbar.CollapsingToolbarLayout
-import com.google.android.material.resources.TextAppearance
+import ru.own.gallery.Presentation.fragments.AlbumsFragment
+import ru.own.gallery.Presentation.fragments.MediaByAlbumFragment
+import ru.own.gallery.Presentation.viewmodels.AlbumsFragmentViewModel
+import ru.own.gallery.Presentation.viewmodels.MediaByAlbumViewModel
 import ru.own.gallery.R
-import java.io.NotActiveException
 
 
 class HomeActivity : AppCompatActivity() {

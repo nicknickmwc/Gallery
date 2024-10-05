@@ -1,4 +1,4 @@
-package ru.own.gallery.Presentation
+package ru.own.gallery.Presentation.adapters
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -9,8 +9,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
-import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
+import ru.own.gallery.Presentation.viewmodels.AlbumsFragmentViewModel
 import ru.own.gallery.R
 
 

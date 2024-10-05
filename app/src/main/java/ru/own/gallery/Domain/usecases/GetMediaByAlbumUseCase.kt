@@ -1,4 +1,7 @@
-package ru.own.gallery.Domain
+package ru.own.gallery.Domain.usecases
+
+import ru.own.gallery.Domain.repositories.MediaByAlbumRepository
+import ru.own.gallery.Domain.models.MediaFilesModel
 
 class GetMediaByAlbumUseCase(private val mediaByAlbumRepository: MediaByAlbumRepository) {
 
