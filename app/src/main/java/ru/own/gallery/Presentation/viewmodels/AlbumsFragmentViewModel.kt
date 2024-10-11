@@ -10,6 +10,7 @@ import android.util.Size
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import ru.own.gallery.DataRepository.AlbumRepositoryAPI33
+import ru.own.gallery.Domain.models.AlbumModel
 import ru.own.gallery.Domain.usecases.GetAlbumUseCase
 import ru.own.gallery.Presentation.ContextProvider
 import java.io.File
@@ -39,11 +40,11 @@ class AlbumsFragmentViewModel(): ViewModel() {
     }
 
     //Альбомы, в соответствующем виде для передачи
-    lateinit var albums: HashMap<String, Bitmap?>
+    lateinit var albums: AlbumModel
 
     //Присваиваем albums необходимое значение
-    fun albumsGet(): HashMap<String, Bitmap?>  {
-        this.albums = albumsConverterAPI33(getAlbumUseCase.execute())
+    fun albumsGet(): AlbumModel  {
+        this.albums = getAlbumUseCase.execute()
         return this.albums
     }
 

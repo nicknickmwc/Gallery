@@ -16,7 +16,7 @@ import java.io.File
 import com.bumptech.glide.Glide
 import ru.own.gallery.Presentation.viewmodels.MediaByAlbumViewModel
 
-class MediaFilesAdapter(private val context: Context, private val mediaFiles: MediaFilesModel,
+class MediaFilesAdapter(private val context: Context, private var mediaFiles: MediaFilesModel,
                         private val mediaByAlbumViewModel: MediaByAlbumViewModel
     ): RecyclerView.Adapter<MediaFilesAdapter.MyViewHolder>() {
 
@@ -26,23 +26,9 @@ class MediaFilesAdapter(private val context: Context, private val mediaFiles: Me
 
     }
 
-    private fun createBitmap(mediaFiles: MediaFilesModel, position: Int):Bitmap? {
-        val typeOfMedia = mediaFiles[position].first
-        val dataOfMedia = mediaFiles[position].second
-
-        var thumbnail: Bitmap? = null
-
-        when (typeOfMedia) {
-            "1" -> {
-                thumbnail = ThumbnailUtils.createImageThumbnail(File(dataOfMedia), Size(256,256), CancellationSignal())
-            }
-            "2" -> {
-                thumbnail = ThumbnailUtils.createVideoThumbnail(File(dataOfMedia), Size(256,256), CancellationSignal())
-            }
-        }
-
-        return thumbnail
-
+    fun updateMediaFiles(newMediaFiles: MediaFilesModel) {
+        mediaFiles = newMediaFiles
+        notifyDataSetChanged()
     }
 
 

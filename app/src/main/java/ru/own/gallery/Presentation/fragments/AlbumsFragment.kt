@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import ru.own.gallery.Domain.models.AlbumModel
 import ru.own.gallery.Presentation.adapters.AlbumsAdapter
 import ru.own.gallery.Presentation.viewmodels.AlbumsFragmentViewModel
 import ru.own.gallery.R
@@ -26,7 +27,7 @@ class AlbumsFragment : Fragment() {
     private val albumsActivityViewModel: AlbumsFragmentViewModel by activityViewModels()
 
     //Список альбомов, конвертированный в вид HashMap<String, Bitmap?>
-    lateinit var albums: HashMap<String, Bitmap?>
+    lateinit var albums: AlbumModel
 
 
     override fun onCreateView(

@@ -10,11 +10,14 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import ru.own.gallery.Domain.models.AlbumModel
 import ru.own.gallery.Presentation.viewmodels.AlbumsFragmentViewModel
 import ru.own.gallery.R
+import java.io.File
 
 
-class AlbumsAdapter(val context: Context, private val albums: HashMap<String, Bitmap?>,val viewModel: AlbumsFragmentViewModel):
+class AlbumsAdapter(val context: Context, private val albums: AlbumModel,val viewModel: AlbumsFragmentViewModel):
     RecyclerView.Adapter<AlbumsAdapter.MyViewHolder>() {
 
 
@@ -49,28 +52,15 @@ class AlbumsAdapter(val context: Context, private val albums: HashMap<String, Bi
 
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        /*
-        var list = ArrayList<String>()
-        for (i in albums.values) {
-            if (i!=null) {
-                list.add(i.toString())
-            }
-        }*/
 
-        //val s: List<String> = albums.take(3)
-        //val s = albums.toList()
-        //val sString = s.joinToString(separator = ",")
-        //val s = albums.size
 
-        val key = albums.keys.toList()[position]
+        holder.textView.text = albums.keys.toList()[position]
+        val mediaPath = albums.values.toList()[position].first
 
-        //holder.imageView.setImageURI(images[position])
-        holder.textView.text = key
-        holder.imageView.setImageBitmap(albums[key])
-        Log.d("ResultOn", "sString")
-
-        /*val intent = Intent(context, AlbumActivity::class.java)
-        context.startActivity(intent)*/
+        Glide.with(context)
+            .load(File(mediaPath))
+            .override(256,256)
+            .into(holder.imageView)
 
 
         //Toast.makeText(context, albums[0].first, Toast.LENGTH_SHORT).show()
